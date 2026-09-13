@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIA Framework — 可信賴 AI 的基石</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void: #050a0f;
+    --bg-deep: #080e16;
+    --bg-surface: #0d1520;
+    --bg-card: #111d2e;
+    --bg-card-hover: #152236;
+    --bg-glass: rgba(13,21,32,0.7);
+    --cyan: #00e5ff;
+    --cyan-dim: #00b8cc;
+    --cyan-dark: rgba(0,229,255,0.08);
+    --cyan-glow: rgba(0,229,255,0.15);
+    --teal: #00c4b0;
+    --blue-electric: #3d8bff;
+    --amber: #f5a623;
+    --red-warn: #ff4d6a;
+    --text-primary: #e8edf4;
+    --text-secondary: #8a98a8;
+    --text-muted: #4a5568;
+    --border: rgba(0,229,255,0.1);
+    --border-strong: rgba(0,229,255,0.25);
+    --grid-line: rgba(255,255,255,0.025);
+    --font-display: 'Syne', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-body: 'Inter', sans-serif;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-void);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ═══════════════════════════════════ GRID OVERLAY ═══ */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ═══════════════════════════════════ NOISE TEXTURE ═══ */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  /* ═══════════════════════════════════ NAV ═══ */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(5,10,15,0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transition: all 0.3s ease;
+  }
+
+  nav.scrolled {
+    background: rgba(5,10,15,0.97);
+    border-bottom-color: var(--border-strong);
+  }
+
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--cyan);
+    letter-spacing: 0.05em;
+    text-decoration: none;
+  }
+
+  .nav-logo-icon {
+    width: 28px;
+    height: 28px;
+    border: 1.5px solid var(--cyan);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--cyan);
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nav-logo-icon::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--cyan);
+    opacity: 0.05;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--cyan); }
+
+  .nav-cta {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--bg-void);
+    background: var(--cyan);
+    border: none;
+    padding: 0.55rem 1.2rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .nav-cta:hover {
+    background: #33ecff;
+    transform: translateY(-1px);
+    box-shadow: 0 0 20px rgba(0,229,255,0.3);
+  }
+
+  /* ═══════════════════════════════════ HERO ═══ */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 8rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+  }
+
+  .hero-orb-1 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(0,229,255,0.08) 0%, transparent 70%);
+    top: -100px;
+    right: -100px;
+  }
+
+  .hero-orb-2 {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(61,139,255,0.06) 0%, transparent 70%);
+    bottom: 100px;
+    left: -50px;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--cyan);
+    background: var(--cyan-dark);
+    border: 1px solid var(--border-strong);
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+    margin-bottom: 2rem;
+    animation: fadeSlideDown 0.6s ease both;
+  }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--cyan);
+    border-radius: 50%;
+    animation: pulse 2s ease infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.8rem, 5vw, 5rem);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    animation: fadeSlideDown 0.6s 0.1s ease both;
+  }
+
+  .hero-title .line-cyan { color: var(--cyan); }
+  .hero-title .line-dim { color: var(--text-secondary); }
+
+  .hero-subtitle {
+    font-size: 1.15rem;
+    color: var(--text-secondary);
+    max-width: 640px;
+    line-height: 1.8;
+    margin-bottom: 3rem;
+    animation: fadeSlideDown 0.6s 0.2s ease both;
+  }
+
+  .hero-risks {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+    animation: fadeSlideDown 0.6s 0.3s ease both;
+  }
+
+  .risk-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    padding: 0.35rem 0.9rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid;
+  }
+
+  .risk-tag.warn { color: var(--amber); border-color: rgba(245,166,35,0.3); background: rgba(245,166,35,0.06); }
+  .risk-tag.danger { color: var(--red-warn); border-color: rgba(255,77,106,0.3); background: rgba(255,77,106,0.06); }
+  .risk-tag.info { color: var(--blue-electric); border-color: rgba(61,139,255,0.3); background: rgba(61,139,255,0.06); }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    animation: fadeSlideDown 0.6s 0.4s ease both;
+  }
+
+  .btn-primary {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--bg-void);
+    background: var(--cyan);
+    border: none;
+    padding: 0.85rem 2rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-decoration: none;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(0,229,255,0.35), 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .btn-primary:hover::before { opacity: 1; }
+
+  .btn-secondary {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--text-primary);
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    padding: 0.85rem 2rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    background: var(--cyan-dark);
+  }
+
+  /* ═══════════════════════════════════ HERO VISUAL ═══ */
+  .hero-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .hero-diagram {
+    position: relative;
+    animation: fadeSlideLeft 0.8s 0.2s ease both;
+  }
+
+  .diagram-canvas {
+    width: 100%;
+    max-width: 520px;
+    aspect-ratio: 1 / 1;
+    position: relative;
+    margin: 0 auto;
+  }
+
+  .diagram-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    animation: rotateRing linear infinite;
+  }
+
+  .ring-1 { width: 90%; height: 90%; animation-duration: 30s; border-color: rgba(0,229,255,0.12); }
+  .ring-2 { width: 70%; height: 70%; animation-duration: 20s; animation-direction: reverse; border-color: rgba(0,229,255,0.08); }
+  .ring-3 { width: 50%; height: 50%; animation-duration: 15s; border-color: rgba(0,229,255,0.06); }
+
+  @keyframes rotateRing {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  .diagram-core {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-strong);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .core-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+  }
+
+  .core-value {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--cyan);
+    line-height: 1;
+  }
+
+  .diagram-node {
+    position: absolute;
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    padding: 0.6rem 0.9rem;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    cursor: default;
+  }
+
+  .diagram-node:hover {
+    border-color: var(--cyan);
+    background: var(--cyan-dark);
+    box-shadow: 0 0 15px var(--cyan-glow);
+  }
+
+  .node-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .n-cyan { color: var(--cyan); }
+  .n-blue { color: var(--blue-electric); }
+  .n-teal { color: var(--teal); }
+  .n-amber { color: var(--amber); }
+  .n-red { color: var(--red-warn); }
+
+  .dot-cyan { background: var(--cyan); }
+  .dot-blue { background: var(--blue-electric); }
+  .dot-teal { background: var(--teal); }
+  .dot-amber { background: var(--amber); }
+  .dot-red { background: var(--red-warn); }
+
+  /* Node positions */
+  .node-xai   { top: 6%;  left: 50%; transform: translateX(-50%); }
+  .node-fair  { top: 30%; right: 2%; }
+  .node-audit { bottom: 10%; right: 8%; }
+  .node-devsec { bottom: 10%; left: 8%; }
+  .node-bias  { top: 30%; left: 2%; }
+
+  /* ═══════════════════════════════════ SECTION HEADERS ═══ */
+  .section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .section-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: var(--cyan);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 3.5vw, 2.8rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+
+  .section-desc {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* ═══════════════════════════════════ SECTION SPACING ═══ */
+  section { padding: 7rem 0; position: relative; }
+
+  section:nth-child(even) .section-bg {
+    background: linear-gradient(135deg, rgba(0,229,255,0.015) 0%, transparent 60%);
+  }
+
+  /* ═══════════════════════════════════ PILLARS ═══ */
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .pillar-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.35s ease;
+    cursor: default;
+  }
+
+  .pillar-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    transition: opacity 0.35s ease;
+    opacity: 0.6;
+  }
+
+  .pillar-card.p-cyan::before  { background: linear-gradient(90deg, transparent, var(--cyan), transparent); }
+  .pillar-card.p-blue::before  { background: linear-gradient(90deg, transparent, var(--blue-electric), transparent); }
+  .pillar-card.p-teal::before  { background: linear-gradient(90deg, transparent, var(--teal), transparent); }
+
+  .pillar-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(0,229,255,0.04) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+
+  .pillar-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(0,229,255,0.05);
+  }
+  .pillar-card:hover::after { opacity: 1; }
+  .pillar-card:hover::before { opacity: 1; }
+
+  .pillar-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    font-size: 22px;
+    position: relative;
+  }
+
+  .pillar-icon.ic-cyan { background: var(--cyan-dark); border: 1px solid var(--border-strong); color: var(--cyan); }
+  .pillar-icon.ic-blue { background: rgba(61,139,255,0.08); border: 1px solid rgba(61,139,255,0.25); color: var(--blue-electric); }
+  .pillar-icon.ic-teal { background: rgba(0,196,176,0.08); border: 1px solid rgba(0,196,176,0.25); color: var(--teal); }
+
+  .pillar-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .pillar-name {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.01em;
+  }
+
+  .pillar-en {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+  }
+
+  .pillar-desc {
+    font-size: 0.93rem;
+    color: var(--text-secondary);
+    line-height: 1.75;
+    margin-bottom: 1.5rem;
+  }
+
+  .pillar-tech-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .pillar-tech-list li {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .pillar-tech-list li::before {
+    content: '▸';
+    font-size: 9px;
+  }
+
+  .p-cyan .pillar-tech-list li::before { color: var(--cyan); }
+  .p-blue .pillar-tech-list li::before { color: var(--blue-electric); }
+  .p-teal .pillar-tech-list li::before { color: var(--teal); }
+
+  /* ═══════════════════════════════════ CASE STUDIES ═══ */
+  .cases-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .case-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: all 0.35s ease;
+  }
+
+  .case-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-3px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+
+  .case-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .case-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    padding: 0.3rem 0.75rem;
+    border-radius: var(--radius-sm);
+  }
+
+  .case-badge.ml { color: var(--cyan); background: var(--cyan-dark); border: 1px solid var(--border-strong); }
+  .case-badge.defi { color: var(--amber); background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.25); }
+
+  .case-title {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .case-body { padding: 2rem; }
+
+  .case-scenario {
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    line-height: 1.75;
+  }
+
+  .risk-matrix {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .matrix-title {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+
+  .matrix-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--grid-line);
+  }
+
+  .matrix-row:last-child { border-bottom: none; }
+
+  .matrix-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  .matrix-bar-wrap {
+    flex: 1;
+    margin: 0 1rem;
+    height: 4px;
+    background: var(--bg-void);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .matrix-bar {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 1s ease;
+  }
+
+  .bar-high { background: var(--red-warn); }
+  .bar-med  { background: var(--amber); }
+  .bar-low  { background: var(--teal); }
+
+  .matrix-val {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    min-width: 36px;
+    text-align: right;
+  }
+
+  .case-solution-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--cyan);
+    margin-bottom: 0.75rem;
+  }
+
+  .case-solution-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .case-solution-list li {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    display: flex;
+    gap: 0.75rem;
+    line-height: 1.6;
+  }
+
+  .case-solution-list li span.check {
+    color: var(--teal);
+    font-weight: 600;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* ═══════════════════════════════════ CODE BLOCK ═══ */
+  .code-block {
+    background: var(--bg-void);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-top: 1rem;
+  }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .code-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .code-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+
+  .code-lang {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+
+  .code-content {
+    padding: 1.25rem;
+    overflow-x: auto;
+  }
+
+  .code-content pre {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    white-space: pre;
+  }
+
+  .tok-key   { color: var(--blue-electric); }
+  .tok-str   { color: var(--teal); }
+  .tok-fn    { color: var(--cyan); }
+  .tok-num   { color: var(--amber); }
+  .tok-cmt   { color: var(--text-muted); font-style: italic; }
+  .tok-dec   { color: var(--red-warn); }
+
+  /* ═══════════════════════════════════ COMPLIANCE ═══ */
+  .compliance-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .compliance-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.35s ease;
+  }
+
+  .compliance-card:hover {
+    border-color: var(--border-strong);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+
+  .compliance-card-title {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .eu-flag {
+    font-size: 20px;
+  }
+
+  .compliance-body {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.75;
+    margin-bottom: 1.25rem;
+  }
+
+  .compliance-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .compliance-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(0,229,255,0.2);
+    color: var(--cyan);
+    background: var(--cyan-dark);
+  }
+
+  /* PIPELINE */
+  .pipeline {
+    position: relative;
+  }
+
+  .pipeline-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .pipeline-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .pipeline-step {
+    display: flex;
+    gap: 1rem;
+    position: relative;
+  }
+
+  .pipeline-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 17px;
+    top: 36px;
+    bottom: 0;
+    width: 1px;
+    background: var(--border);
+  }
+
+  .step-circle {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    background: var(--bg-card);
+    transition: all 0.3s ease;
+  }
+
+  .pipeline-step:hover .step-circle {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    box-shadow: 0 0 12px var(--cyan-glow);
+  }
+
+  .step-content { padding-bottom: 1.5rem; padding-top: 4px; }
+
+  .step-name {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+  }
+
+  .step-desc {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  .step-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    margin-top: 0.5rem;
+  }
+
+  .status-pass { color: var(--teal); background: rgba(0,196,176,0.1); border: 1px solid rgba(0,196,176,0.25); }
+  .status-scan { color: var(--amber); background: rgba(245,166,35,0.1); border: 1px solid rgba(245,166,35,0.25); }
+  .status-block { color: var(--red-warn); background: rgba(255,77,106,0.1); border: 1px solid rgba(255,77,106,0.25); }
+
+  /* ═══════════════════════════════════ STATS BAND ═══ */
+  .stats-band {
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 0;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+  }
+
+  .stat-item {
+    text-align: center;
+    padding: 1.5rem;
+    border-right: 1px solid var(--border);
+    transition: background 0.3s ease;
+  }
+
+  .stat-item:last-child { border-right: none; }
+  .stat-item:hover { background: var(--bg-card); }
+
+  .stat-value {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--cyan);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.03em;
+  }
+
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* ═══════════════════════════════════ CTA SECTION ═══ */
+  #cta {
+    padding: 7rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 100%, rgba(0,229,255,0.06) 0%, transparent 70%);
+  }
+
+  .cta-card {
+    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-xl);
+    padding: 4rem;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .cta-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  }
+
+  .cta-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 3vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+
+  .cta-desc {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    max-width: 560px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.8;
+  }
+
+  .cta-form {
+    display: flex;
+    gap: 1rem;
+    max-width: 480px;
+    margin: 0 auto 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .cta-input {
+    flex: 1;
+    min-width: 220px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    padding: 0.85rem 1.2rem;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text-primary);
+    outline: none;
+    transition: all 0.25s ease;
+  }
+
+  .cta-input::placeholder { color: var(--text-muted); }
+
+  .cta-input:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 3px var(--cyan-dark);
+  }
+
+  .cta-options {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
+  .option-btn {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid var(--border);
+    padding: 0.7rem 1.4rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .option-btn:hover,
+  .option-btn.active {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    background: var(--cyan-dark);
+  }
+
+  .cta-note {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  .cta-note a { color: var(--cyan); text-decoration: none; }
+
+  /* ═══════════════════════════════════ FOOTER ═══ */
+  footer {
+    background: var(--bg-deep);
+    border-top: 1px solid var(--border);
+    padding: 3rem 0;
+  }
+
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  .footer-copy {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .footer-links a {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--cyan); }
+
+  /* ═══════════════════════════════════ ANIMATIONS ═══ */
+  @keyframes fadeSlideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeSlideLeft {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+
+  /* ═══════════════════════════════════ DIVIDER ═══ */
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-strong) 50%, transparent);
+    margin: 0;
+  }
+
+  /* ═══════════════════════════════════ RWD ═══ */
+  @media (max-width: 900px) {
+    .hero-layout { grid-template-columns: 1fr; gap: 3rem; }
+    .hero-diagram { order: -1; }
+    .diagram-canvas { max-width: 300px; }
+    .pillars-grid { grid-template-columns: 1fr; }
+    .cases-grid { grid-template-columns: 1fr; }
+    .compliance-layout { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .stat-item:nth-child(2) { border-right: none; }
+    .nav-links { display: none; }
+    .cta-card { padding: 2.5rem 1.5rem; }
+    .footer-inner { flex-direction: column; text-align: center; }
+  }
+
+  @media (max-width: 600px) {
+    .hero-title { font-size: 2.3rem; }
+    .section-title { font-size: 1.8rem; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .hero-actions { flex-direction: column; align-items: flex-start; }
+    .cta-form { flex-direction: column; }
+    .cta-input { min-width: unset; }
+  }
+
+  /* SCAN LINE EFFECT */
+  .scan-effect {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 2px,
+      rgba(0,0,0,0.02) 2px,
+      rgba(0,0,0,0.02) 4px
+    );
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#hero" class="nav-logo">
+      <div class="nav-logo-icon">AIA</div>
+      AI IMPACT ASSESS
+    </a>
+    <ul class="nav-links">
+      <li><a href="#pillars">架構</a></li>
+      <li><a href="#cases">案例</a></li>
+      <li><a href="#compliance">合規</a></li>
+      <li><a href="#cta">取得資源</a></li>
+    </ul>
+    <a href="#cta" class="nav-cta">下載白皮書 →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="container">
+    <div class="hero-layout">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <div class="badge-dot"></div>
+          AIA FRAMEWORK v2.4 · ENTERPRISE GRADE
+        </div>
+        <h1 class="hero-title">
+          可信賴 AI 的<br>
+          <span class="line-cyan">基石</span>：解密<br>
+          <span class="line-dim">影響評估框架</span>
+        </h1>
+        <p class="hero-subtitle">
+          AI 系統在創造技術紅利的同時，暗藏三類系統性風險：
+          演算法偏見導致決策歧視、黑盒子模型規避問責機制、以及訓練資料中潛伏的隱私侵犯向量。
+          AIA 框架提供可量化、可審計的評估方法論，將風險納入可控的工程閉環。
+        </p>
+        <div class="hero-risks">
+          <span class="risk-tag warn">⚠ 演算法偏見 · Algorithmic Bias</span>
+          <span class="risk-tag danger">⛔ 黑盒子決策 · Black-Box Model</span>
+          <span class="risk-tag info">🔍 隱私侵犯向量 · Privacy Vectors</span>
+        </div>
+        <div class="hero-actions">
+          <a href="#cta" class="btn-primary">下載開源 AIA 白皮書</a>
+          <a href="#pillars" class="btn-secondary">探索技術框架</a>
+        </div>
+      </div>
+
+      <div class="hero-diagram">
+        <div class="diagram-canvas">
+          <div class="diagram-ring ring-1"></div>
+          <div class="diagram-ring ring-2"></div>
+          <div class="diagram-ring ring-3"></div>
+          <div class="diagram-core">
+            <span class="core-label">FRAMEWORK</span>
+            <span class="core-value">AIA</span>
+            <span class="core-label">v2.4</span>
+          </div>
+          <div class="diagram-node node-xai n-cyan"><span class="node-dot dot-cyan"></span>XAI Engine</div>
+          <div class="diagram-node node-fair n-blue"><span class="node-dot dot-blue"></span>Fairness Metrics</div>
+          <div class="diagram-node node-audit n-teal"><span class="node-dot dot-teal"></span>Audit Trail</div>
+          <div class="diagram-node node-devsec n-amber"><span class="node-dot dot-amber"></span>DevSecOps Gate</div>
+          <div class="diagram-node node-bias n-red"><span class="node-dot dot-red"></span>Bias Detector</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAND -->
+<div class="stats-band">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item reveal">
+        <div class="stat-value" data-target="94">0</div>
+        <div class="stat-label">%  高風險 AI 系統缺乏正式評估</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-1">
+        <div class="stat-value" data-target="37">0</div>
+        <div class="stat-label">%  偏見事件源自訓練資料</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-2">
+        <div class="stat-value" data-target="2026">0</div>
+        <div class="stat-label">EU AI Act 強制執行元年</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-3">
+        <div class="stat-value" data-target="10">0</div>
+        <div class="stat-label">× 早期攔截 vs 事後補救成本比</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- PILLARS -->
+<section id="pillars">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-eyebrow">// CORE ARCHITECTURE</span>
+      <h2 class="section-title">AIA 三大技術支柱</h2>
+      <p class="section-desc">
+        以工程語言重新定義 AI 治理的三個核心維度，從理論原則轉化為可實施的技術規格
+      </p>
+    </div>
+    <div class="pillars-grid">
+
+      <!-- Pillar 1 -->
+      <div class="pillar-card p-cyan reveal">
+        <div class="pillar-icon ic-cyan">⬡</div>
+        <div class="pillar-num">01 ·  PILLAR</div>
+        <div class="pillar-name">透明度</div>
+        <div class="pillar-en">Transparency via XAI</div>
+        <p class="pillar-desc">
+          導入可解釋性 AI（XAI）技術棧，針對神經網路各層進行特徵歸因分析。
+          透過 SHAP 值與 LIME 方法，將模型的「黑盒決策路徑」轉化為人類可審視的特徵貢獻分佈圖，
+          確保高風險決策具備完整的溯源鏈路。
+        </p>
+        <ul class="pillar-tech-list">
+          <li>SHAP / LIME 特徵歸因分析</li>
+          <li>注意力機制可視化 (Attention Maps)</li>
+          <li>概念向量測試 (TCAV)</li>
+          <li>對抗樣本擾動分析</li>
+        </ul>
+      </div>
+
+      <!-- Pillar 2 -->
+      <div class="pillar-card p-blue reveal reveal-delay-1">
+        <div class="pillar-icon ic-blue">⬡</div>
+        <div class="pillar-num">02 ·  PILLAR</div>
+        <div class="pillar-name">公平性</div>
+        <div class="pillar-en">Fairness & Debiasing</div>
+        <p class="pillar-desc">
+          透過對抗性測試框架（Adversarial Testing）系統化探測模型在受保護特徵群組間的決策差異，
+          並運用重新加權（Re-weighting）與對抗去偏見（Adversarial Debiasing）演算法對訓練集進行校正，
+          量化 Demographic Parity 與 Equalized Odds 指標。
+        </p>
+        <ul class="pillar-tech-list">
+          <li>Demographic Parity 差異量化</li>
+          <li>Equalized Odds 校正演算法</li>
+          <li>反事實公平性 (Counterfactual Fairness)</li>
+          <li>訓練集切片分析 (Slice-based Eval)</li>
+        </ul>
+      </div>
+
+      <!-- Pillar 3 -->
+      <div class="pillar-card p-teal reveal reveal-delay-2">
+        <div class="pillar-icon ic-teal">⬡</div>
+        <div class="pillar-num">03 ·  PILLAR</div>
+        <div class="pillar-name">問責制</div>
+        <div class="pillar-en">Accountability & Audit</div>
+        <p class="pillar-desc">
+          建立自動化決策的不可篡改審計軌跡，以雜湊鏈（Hash-chaining）技術確保每筆 AI 推論記錄的完整性與時序可驗性。
+          結合 RBAC 存取控制模型與 SIEM 整合，實現決策責任的端對端歸因（Attribution）。
+        </p>
+        <ul class="pillar-tech-list">
+          <li>Hash-chain 不可篡改日誌結構</li>
+          <li>決策責任歸因 (Attribution Graph)</li>
+          <li>RBAC + 最小權限原則</li>
+          <li>SIEM 實時告警整合</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- CASE STUDIES -->
+<section id="cases">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-eyebrow">// TECHNICAL CASE STUDIES</span>
+      <h2 class="section-title">技術落地應用場景</h2>
+      <p class="section-desc">
+        兩個高複雜度實務場景，佐證 AIA 框架在不同技術堆疊中的必要性與可操作性
+      </p>
+    </div>
+    <div class="cases-grid">
+
+      <!-- Case 1 -->
+      <div class="case-card reveal">
+        <div class="case-header">
+          <span class="case-badge ml">ML · QUANT FINANCE</span>
+          <h3 class="case-title">碳權 / 加密貨幣預測模型</h3>
+        </div>
+        <div class="case-body">
+          <p class="case-scenario">
+            量化預測模型在碳權市場或加密貨幣趨勢預測中，若訓練資料過度擬合（Overfitting）於特定市場週期，
+            其在分佈外樣本（OOD, Out-of-Distribution）的泛化能力將嚴重退化，
+            導致誤導性的高置信度預測，進而引發系統性市場風險與決策偏差。
+          </p>
+
+          <div class="risk-matrix">
+            <div class="matrix-title">// RISK MATRIX — PRE-AIA ASSESSMENT</div>
+            <div class="matrix-row">
+              <span class="matrix-label">Overfitting Risk</span>
+              <div class="matrix-bar-wrap"><div class="matrix-bar bar-high" style="width:88%"></div></div>
+              <span class="matrix-val n-red">88%</span>
+            </div>
+            <div class="matrix-row">
+              <span class="matrix-label">OOD Generalization</span>
+              <div class="matrix-bar-wrap"><div class="matrix-bar bar-high" style="width:72%"></div></div>
+              <span class="matrix-val n-red">−72%</span>
+            </div>
+            <div class="matrix-row">
+              <span class="matrix-label">Explainability Score</span>
+              <div class="matrix-bar-wrap"><div class="matrix-bar bar-med" style="width:30%"></div></div>
+              <span class="matrix-val n-amber">30%</span>
+            </div>
+            <div class="matrix-row">
+              <span class="matrix-label">Audit Coverage</span>
+              <div class="matrix-bar-wrap"><div class="matrix-bar bar-med" style="width:18%"></div></div>
+              <span class="matrix-val n-amber">18%</span>
+            </div>
+          </div>
+
+          <div class="case-solution-title">// AIA 介入措施</div>
+          <ul class="case-solution-list">
+            <li><span class="check">✓</span> 強制執行 Walk-Forward Validation 確保時序不洩漏，並設置 Temporal Holdout 評估 OOD 泛化能力</li>
+            <li><span class="check">✓</span> 導入 SHAP 時序特徵歸因，識別模型對「看漲情緒期」數據的過度依賴，防止記憶型擬合</li>
+            <li><span class="check">✓</span> 部署 Model Card 強制記錄數據來源、時間範圍與分佈假設，作為決策責任的後備依據</li>
+          </ul>
+
+          <div class="code-block" style="margin-top:1.25rem;">
+            <div class="code-header">
+              <div class="code-dots">
+                <div class="code-dot dot-r"></div>
+                <div class="code-dot dot-y"></div>
+                <div class="code-dot dot-g"></div>
+              </div>
+              <span class="code-lang">PYTHON · aia_validator.py</span>
+            </div>
+            <div class="code-content">
+<pre><span class="tok-cmt"># AIA 時序驗證器 — 防止 Data Leakage</span>
+<span class="tok-key">class</span> <span class="tok-fn">AIATemporalValidator</span>:
+  <span class="tok-key">def</span> <span class="tok-fn">assess_overfitting_risk</span>(self, model, X, y):
+    oof_scores = <span class="tok-fn">walk_forward_cv</span>(model, X, y,
+      gap=<span class="tok-num">30</span>,  <span class="tok-cmt"># 30 日防洩漏間隔</span>
+      n_splits=<span class="tok-num">5</span>
+    )
+    ood_delta = <span class="tok-fn">compute_ood_degradation</span>(
+      in_dist=oof_scores.mean(),
+      ood_scores=<span class="tok-fn">evaluate_on_holdout</span>(model)
+    )
+    <span class="tok-key">if</span> ood_delta &gt; <span class="tok-num">0.15</span>:  <span class="tok-cmt"># AIA 閾值</span>
+      <span class="tok-dec">raise</span> <span class="tok-fn">AIARiskException</span>(
+        f<span class="tok-str">"OOD degradation {ood_delta:.2f} exceeds threshold"</span>
+      )
+    <span class="tok-key">return</span> <span class="tok-fn">AIAReport</span>(risk_level=<span class="tok-str">"ACCEPTABLE"</span>)</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Case 2 -->
+      <div class="case-card reveal reveal-delay-1">
+        <div class="case-header">
+          <span class="case-badge defi">BLOCKCHAIN · DeFi</span>
+          <h3 class="case-title">智能合約 × AI 預言機</h3>
+        </div>
+        <div class="case-body">
+          <p class="case-scenario">
+            去中心化金融（DeFi）協議中，AI 預言機（Oracles）扮演將鏈下資料推送至智能合約的關鍵中介角色。
+            當預言機模型遭受對抗性數據投毒（Data Poisoning）或閃電貸攻擊操縱，將觸發錯誤的自動化清算邏輯，
+            造成協議流動性崩潰，此為 AIA 框架中的極高風險場景。
+          </p>
+
+          <div class="risk-matrix">
+            <div class="matrix-title">// RISK MATRIX — ORACLE ATTACK SURFACE</div>
+            <div class="matrix-row">
+              <span class="matrix-label">Manipulation Surface</span>
+              <div class="matrix-bar-wrap"><div class="matrix-bar bar-high" style="width:95%"></div></div>
+              <span class="matrix-val n-red">CRITICAL</span>
+            </div>
+            <div class="matrix-row">
+              <span class="matrix-label">Flash Loan Exposure</span>
+              <div class="matrix-bar-wrap"><div class="matrix-bar bar-high" style="width:82%"></div></div>
+              <span class="matrix-val n-red">HIGH</span>
+            </div>
+            <div class="matrix-row">
+              <span class="matrix-label">Model Auditability</span>
+              <div class="matrix-bar-wrap"><div class="matrix-bar bar-med" style="width:22%"></div></div>
+              <span class="matrix-val n-amber">LOW</span>
+            </div>
+            <div class="matrix-row">
+              <span class="matrix-label">Governance Coverage</span>
+              <div class="matrix-bar-wrap"><div class="matrix-bar bar-low" style="width:45%"></div></div>
+              <span class="matrix-val n-teal">MED</span>
+            </div>
+          </div>
+
+          <div class="case-solution-title">// AIA 介入措施</div>
+          <ul class="case-solution-list">
+            <li><span class="check">✓</span> 部署多源預言機聚合（TWAP + Chainlink + 自建模型）並加入統計異常偵測，單源偏差超過 σ=2 時觸發斷路器</li>
+            <li><span class="check">✓</span> 對 AI 推論模型進行對抗性擾動測試（FGSM / PGD 攻擊），量化其對數據投毒攻擊的魯棒性閾值</li>
+            <li><span class="check">✓</span> 以鏈上雜湊承諾（Hash Commitment）記錄每次 AI 預言機決策依據，確保爭議事件可鏈上取證</li>
+          </ul>
+
+          <div class="code-block" style="margin-top:1.25rem;">
+            <div class="code-header">
+              <div class="code-dots">
+                <div class="code-dot dot-r"></div>
+                <div class="code-dot dot-y"></div>
+                <div class="code-dot dot-g"></div>
+              </div>
+              <span class="code-lang">SOLIDITY · OracleAIAGuard.sol</span>
+            </div>
+            <div class="code-content">
+<pre><span class="tok-cmt">// AIA Oracle Circuit Breaker</span>
+<span class="tok-key">contract</span> <span class="tok-fn">OracleAIAGuard</span> {
+  uint256 <span class="tok-key">public constant</span> SIGMA_THRESHOLD = <span class="tok-num">2e18</span>;
+
+  <span class="tok-key">function</span> <span class="tok-fn">validateAndCommit</span>(
+    uint256 aiPrice, uint256 twapPrice,
+    bytes32 modelStateHash
+  ) <span class="tok-key">external returns</span> (bool) {
+    uint256 deviation = <span class="tok-fn">_computeSigmaDeviation</span>(
+      aiPrice, twapPrice
+    );
+    <span class="tok-key">require</span>(deviation &lt;= SIGMA_THRESHOLD,
+      <span class="tok-str">"AIA: Oracle deviation exceeds threshold"</span>
+    );
+    <span class="tok-cmt">// 鏈上審計承諾</span>
+    auditLog[block.number] = <span class="tok-fn">keccak256</span>(
+      <span class="tok-fn">abi.encode</span>(aiPrice, modelStateHash, block.timestamp)
+    );
+    <span class="tok-key">return true</span>;
+  }
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- COMPLIANCE -->
+<section id="compliance">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-eyebrow">// COMPLIANCE & CI/CD INTEGRATION</span>
+      <h2 class="section-title">政策合規與開發流程整合</h2>
+      <p class="section-desc">
+        從法規遵循到工程實踐，將 AIA 轉化為可自動執行的 DevSecOps 閉環
+      </p>
+    </div>
+    <div class="compliance-layout">
+      <div>
+        <!-- EU AI Act Card -->
+        <div class="compliance-card reveal">
+          <div class="compliance-card-title">
+            <span class="eu-flag">🇪🇺</span>
+            EU AI Act — 高風險系統強制規範
+          </div>
+          <p class="compliance-body">
+            2026 年全面生效的歐盟人工智慧法案，對高風險 AI 系統（包含信貸評分、招聘篩選、
+            關鍵基礎設施控制）設定強制性的技術透明度與文件義務。
+            第 9–15 條要求系統提供商建立風險管理體系、記錄訓練資料集的可溯源性，
+            並於上市前完成符合性評估（Conformity Assessment）。違規企業面臨高達全球年營業額 3% 的罰款。
+          </p>
+          <div class="compliance-tags">
+            <span class="compliance-tag">Article 9 Risk Mgmt</span>
+            <span class="compliance-tag">Article 13 Transparency</span>
+            <span class="compliance-tag">Article 15 Accuracy</span>
+            <span class="compliance-tag">GPAI 基礎模型規範</span>
+            <span class="compliance-tag">Annex III 高風險清單</span>
+          </div>
+        </div>
+
+        <!-- Other Regs -->
+        <div class="compliance-card reveal reveal-delay-1">
+          <div class="compliance-card-title">
+            🌐 跨境合規矩陣
+          </div>
+          <p class="compliance-body">
+            AIA 框架設計時已內建多法域合規映射，可同步覆蓋台灣《個人資料保護法》、
+            NIST AI RMF（人工智慧風險管理框架）1.0、ISO/IEC 42001 AI 管理系統認證，
+            以及金融業監管機構（FSC / FCA / OCC）對算法模型的驗證要求。
+          </p>
+          <div class="compliance-tags">
+            <span class="compliance-tag">NIST AI RMF 1.0</span>
+            <span class="compliance-tag">ISO/IEC 42001</span>
+            <span class="compliance-tag">PDPA 台灣個資法</span>
+            <span class="compliance-tag">GDPR Article 22</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PIPELINE -->
+      <div class="reveal reveal-delay-1">
+        <div class="pipeline-title">// AIA-INTEGRATED CI/CD PIPELINE</div>
+        <div class="pipeline-steps">
+
+          <div class="pipeline-step">
+            <div class="step-circle">01</div>
+            <div class="step-content">
+              <div class="step-name">CODE COMMIT → Pre-commit Hook</div>
+              <p class="step-desc">靜態分析檢測訓練腳本中的資料洩漏模式（如 fit_transform 在全集運行），自動標記高風險程式碼路徑。</p>
+              <span class="step-status status-scan">⟳ SCANNING</span>
+            </div>
+          </div>
+
+          <div class="pipeline-step">
+            <div class="step-circle">02</div>
+            <div class="step-content">
+              <div class="step-name">BUILD → AIA Bias Detection Gate</div>
+              <p class="step-desc">在 CI 階段自動執行 Fairness Evaluation Suite，計算跨受保護群組的性能差異指標，超過閾值則阻斷建構流程。</p>
+              <span class="step-status status-block">⊘ BLOCK ON FAIL</span>
+            </div>
+          </div>
+
+          <div class="pipeline-step">
+            <div class="step-circle">03</div>
+            <div class="step-content">
+              <div class="step-name">TEST → Adversarial Robustness Check</div>
+              <p class="step-desc">自動化生成對抗樣本（FGSM / Boundary Attack），量測模型在擾動輸入下的決策穩定性邊界，輸出 Robustness Score。</p>
+              <span class="step-status status-scan">⟳ EVALUATING</span>
+            </div>
+          </div>
+
+          <div class="pipeline-step">
+            <div class="step-circle">04</div>
+            <div class="step-content">
+              <div class="step-name">STAGE → XAI Report Generation</div>
+              <p class="step-desc">自動生成 SHAP 全局特徵重要性報告與 LIME 個案解釋摘要，作為人工審核的結構化輸入文件。</p>
+              <span class="step-status status-pass">✓ AUTO-GENERATE</span>
+            </div>
+          </div>
+
+          <div class="pipeline-step">
+            <div class="step-circle">05</div>
+            <div class="step-content">
+              <div class="step-name">DEPLOY → Immutable Audit Commit</div>
+              <p class="step-desc">部署觸發器自動將模型雜湊、訓練集版本、AIA 評估報告雜湊寫入不可變日誌，形成完整的 AI 生命週期憑證鏈。</p>
+              <span class="step-status status-pass">✓ COMMITTED</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-bg"></div>
+  <div class="container">
+    <div class="cta-card reveal">
+      <div class="hero-badge" style="justify-content: center; animation: none;">
+        <div class="badge-dot"></div>
+        開源授權 · Apache 2.0 · 企業版 Available
+      </div>
+      <h2 class="cta-title">立即部署您的 AI 治理閉環</h2>
+      <p class="cta-desc">
+        選擇最符合您團隊需求的資源包。無論是技術白皮書、開源評估工具，
+        或是企業級的客製化導入服務，AIA 框架均已準備就緒。
+      </p>
+
+      <div class="cta-options">
+        <button class="option-btn active" onclick="selectOption(this, '白皮書')">📄 AIA 評估框架白皮書</button>
+        <button class="option-btn" onclick="selectOption(this, '工具包')">🔧 企業 AI 風險工具包</button>
+        <button class="option-btn" onclick="selectOption(this, '顧問')">🛡 架構顧問諮詢</button>
+      </div>
+
+      <div class="cta-form">
+        <input type="email" class="cta-input" placeholder="enterprise@company.com" id="cta-email">
+        <button class="btn-primary" onclick="handleCTA()" style="white-space:nowrap;">
+          取得資源 →
+        </button>
+      </div>
+
+      <div id="cta-success" style="display:none; margin-bottom:1.5rem;">
+        <span style="font-family:var(--font-mono); font-size:13px; color:var(--teal);">
+          ✓ 已收到申請，我們將於 1 個工作天內聯繫您
+        </span>
+      </div>
+
+      <p class="cta-note">
+        提交即代表同意 <a href="#">隱私政策</a> 及 <a href="#">開源授權條款</a>。資料僅用於提供所申請資源。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <span class="footer-copy">© 2026 AIA Framework · Built for Trustworthy AI Systems · Apache 2.0 License</span>
+      <ul class="footer-links">
+        <li><a href="#">GitHub</a></li>
+        <li><a href="#">文件</a></li>
+        <li><a href="#">隱私政策</a></li>
+        <li><a href="#">聯絡我們</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ─── NAV SCROLL ─────────────────────────────────────────────────────────
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // ─── SCROLL REVEAL ──────────────────────────────────────────────────────
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  revealEls.forEach(el => observer.observe(el));
+
+  // ─── COUNTER ANIMATION ──────────────────────────────────────────────────
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const el = e.target;
+        const target = parseInt(el.dataset.target);
+        const duration = target > 100 ? 1800 : 1000;
+        const start = performance.now();
+        const update = (now) => {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const ease = 1 - Math.pow(1 - progress, 3);
+          el.textContent = target > 999
+            ? Math.round(target * ease).toString()
+            : Math.round(target * ease).toString();
+          if (progress < 1) requestAnimationFrame(update);
+        };
+        requestAnimationFrame(update);
+        counterObserver.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('.stat-value[data-target]').forEach(el => counterObserver.observe(el));
+
+  // ─── OPTION BUTTONS ─────────────────────────────────────────────────────
+  function selectOption(btn, label) {
+    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  // ─── CTA SUBMIT ─────────────────────────────────────────────────────────
+  function handleCTA() {
+    const email = document.getElementById('cta-email').value.trim();
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !re.test(email)) {
+      const input = document.getElementById('cta-email');
+      input.style.borderColor = 'var(--red-warn)';
+      input.style.boxShadow = '0 0 0 3px rgba(255,77,106,0.1)';
+      setTimeout(() => {
+        input.style.borderColor = '';
+        input.style.boxShadow = '';
+      }, 2000);
+      return;
+    }
+    document.querySelector('.cta-form').style.display = 'none';
+    document.getElementById('cta-success').style.display = 'block';
+  }
+
+  // ─── MATRIX BAR ANIMATION ───────────────────────────────────────────────
+  const barObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const bars = e.target.querySelectorAll('.matrix-bar');
+        bars.forEach(bar => {
+          const targetW = bar.style.width;
+          bar.style.width = '0%';
+          setTimeout(() => { bar.style.width = targetW; }, 200);
+        });
+        barObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('.risk-matrix').forEach(el => barObserver.observe(el));
+
+  // ─── SMOOTH ANCHOR ──────────────────────────────────────────────────────
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        const offset = 80;
+        const top = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+  });
+</script>
+</body>
+</html>
